@@ -76,7 +76,7 @@
       addMessage('user', userInput);
 
       try {
-        const response = await fetch('https://dsw-gateway-cn-hangzhou.data.aliyun.com/dsw-617319/proxy/5000/', {  // 假设Python服务器运行在本地的5000端口
+        const response = await fetch('https://localhost:5000/', {  // 假设Python服务器运行在本地的5000端口
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
