@@ -2,6 +2,23 @@
 
 An Electron application with Vue
 
+```bash
+HoshinoProject/
+│
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   ├── Toolbar.vue
+│   │   ├── ChatWindow.vue
+│   │   └── App.vue
+│   ├── views/
+│   ├── main.js
+│   └── App.vue
+├── index.html
+├── package.json
+└── vite.config.js
+```
+
 ## Recommended IDE Setup
 
 - [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar)
