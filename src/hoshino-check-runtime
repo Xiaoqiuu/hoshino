@@ -1,0 +1,21 @@
+# check.py
+def check_libraries(libraries):
+    import importlib
+    missing_libraries = []
+    for library in libraries:
+        try:
+            importlib.import_module(library)
+        except ImportError:
+            missing_libraries.append(library)
+    
+    return missing_libraries
+
+if __name__ == "__main__":
+    import sys
+    libraries_to_check = sys.argv[1:]
+    missing_libraries = check_libraries(libraries_to_check)
+    
+    if not missing_libraries:
+        print("环境搭建完成")
+    else:
+        print(f"缺少以下库：{', '.join(missing_libraries)}")

@@ -1,0 +1,524 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background-color: var(--body-color);
+  transition: all 0.3s ease; /* 过渡效果，用于主题切换或其他状态改变 */
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+/* 全局变量定义 */
+:root {
+  --body-color: #E4E9F7;
+  --shell-color: #FFF;
+   --primary-color: #695CFE;/*好像是控制导航伸缩按钮的颜色*/
+  --primary-color-light: #F6F5FF;
+  --toggle-color: #DDD;
+  --text-color: #ffffff;
+}
+
+/* 深色模式的全局变量 */
+.dark {
+  --body-color: #202224;
+  --shell-color: #171717;
+  --primary-color: #3a3b3c;
+  --primary-color-light: #3a3b3c;
+  --toggle-color: #fff;
+  --text-color: #ccc;
+}
+
+/* 不可见的标题栏，用于窗口拖动 */
+.title-bar {
+  height: 30px;
+  -webkit-app-region: drag; /* 允许在该区域拖动窗口 */
+  width: 100%;
+  background-color: transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 200; /* 确保标题栏位于最前 */
+}
+
+/* 右上角窗口控制按钮的容器 */
+.window-controls {
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  z-index: 201;
+  -webkit-app-region: no-drag; /* 防止在按钮区域拖动窗口 */
+  user-select:none;
+}
+
+.window-control-button {
+  background-color: transparent;
+  border: none;
+  padding:  10px 20px;
+  cursor: pointer;
+  user-select:none;
+}
+
+.window-controls .window-control-button {
+  transition: background-color 0.2s ease;
+}
+
+.window-controls .window-control-button img {
+  transition: filter 0.3s ease;
+}
+
+.window-controls .window-control-button img {
+  filter: brightness(0) saturate(100%) invert(8%) sepia(0%) saturate(6143%) hue-rotate(317deg) brightness(103%) contrast(74%);
+}
+
+.dark .window-controls .window-control-button img, .window-controls .window-control-button.button-close:hover img {
+  filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7432%) hue-rotate(29deg) brightness(122%) contrast(112%);
+}
+
+.window-controls .window-control-button:hover {
+  background-color: rgba(255, 255, 255, 0.2)
+}
+
+.window-controls .window-control-button:active {
+  background-color: rgba(255, 255, 255, 0.4)
+}
+
+.window-controls .window-control-button.button-close:hover {
+  background-color: rgb(190, 46, 46);
+}
+
+.window-controls .window-control-button.button-close:active {
+  background-color: rgb(139, 31, 31);
+}
+
+.window-control-button img {
+  width: 16px;
+  height: 16px; /* 控制按钮图标的大小 */
+}
+
+.window-control-button:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* 鼠标悬停时的背景变化 */
+}
+
+/* 侧边栏的整体样式 */
+.shell {
+  position: fixed;
+  top: 0; /* 标题栏距离高度 */
+  left: 0;
+  height: 100%; /* 侧边栏高度，占据窗口 100% */
+  width: 250px;
+  padding: 10px 14px;
+  background: var(--shell-color);
+  z-index: 100; /* 确保侧边栏层级低于标题栏 */
+}
+
+.night-mode {
+  background-color: var(--shell-color);
+  transition: none; /* 移除过渡效果 */
+}
+
+/* 白天模式 */
+nav.shell {
+  /* 白天模式下的样式 */
+  background-color: var(--shell-color);
+  color: var(--text-color);
+}
+
+/* 夜间模式 */
+nav.shell.dark-nav {
+  background-color: var(--shell-color);
+  color: var(--text-color);
+}
+
+/* 流动背景效果，只在白天模式下显示 */
+.shell.flowing-gradient {
+  background: linear-gradient(270deg, #695CFE, #8C62FF);
+  background-size: 200% 200%;
+  animation: gradient-flow 5s ease infinite;
+  transition: none; /* Remove transition for the gradient */
+}
+
+/* Keyframes for the flowing gradient effect */
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* 夜间模式下移除流动效果 */
+.dark-mode .shell.flowing-gradient {
+  background: var(--shell-color); /* 夜间模式的背景色 */
+  animation: none; /* 禁用动画 */
+}
+
+.dark-mode.shell {
+  background-color: var(--shell-color);
+  transition: none; /* 移除过渡效果 */
+}
+
+/* 白天和夜晚模式切换的平滑过渡 */
+body, .shell {
+  transition: background-color 0.3s ease, color 0.3s ease; /* 保证颜色和背景平滑切换 */
+}
+
+/* 当侧边栏处于收起状态时 */
+.shell.close {
+  width: 88px;
+}
+
+/* 夜间模式下的导航栏样式 */
+.dark nav.shell {
+  background-color: var(--shell-color);
+  color: var(--text-color);
+}
+
+.dark nav.shell .icon,
+.dark nav.shell .text {
+  color: var(--text-color);
+}
+
+/* 侧边栏内每个菜单项的样式 */
+.shell li {
+  height: 50px;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.image,
+.icon {
+  min-width: 60px;
+  border-radius: 6px; /* 圆角处理 */
+}
+
+.icon {
+  margin-left: 15px;
+  min-width: 45px;
+  border-radius: 6px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 300 23px ''; /* 图标字体样式 */
+}
+
+.text,
+.icon {
+  color: var(--text-color);
+  transition: all 0.3s ease; /* 文字颜色的过渡效果 */
+}
+
+.text {
+  font: 500 17px;
+  white-space: nowrap;
+  opacity: 1; /* 默认情况下文字显示 */
+}
+
+/* 当侧边栏关闭时隐藏文字 */
+.shell.close .text {
+  opacity: 0;
+}
+
+header {
+  position: relative; /* 用于定位其他元素 */
+}
+
+/* 侧边栏顶部的用户信息部分 */
+.image-text {
+  padding-top : 50px;
+  display: flex;
+  align-items: center;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 用户名样式 */
+.name {
+  margin-top: 2px;
+  font: 600 18px '';
+}
+
+/* 用户签名的样式 */
+.personal-signature {
+  font-size: 14px;
+  margin-top: -2px;
+  display: block;
+}
+
+/* 用户头像的样式 */
+.image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image img {
+  width: 45px;
+  border-radius: 6px; /* 圆角处理 */
+}
+
+/* 收起侧边栏时的箭头样式 */
+.toggle {
+  position: absolute;
+  top: 50%;
+  right: -25px;
+  transform: translateY(-50%) rotate(180deg);
+  height: 25px;
+  width: 25px;
+  background-color: var(--primary-color);
+  color: var(--shell-color);
+  border-radius: 50%; /* 圆形按钮 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle {
+  color: #ccc; /* 收起时的箭头颜色 */
+}
+
+/* 侧边栏收起时的箭头旋转样式 */
+.shell.close .toggle {
+  transform: translateY(-50%) rotate(0deg);
+}
+
+.menu {
+  margin-top: 40px; /* 菜单与顶部的间距 */
+}
+
+/* 搜索框样式 */
+li.search-box {
+  border-radius: 6px;
+  background-color: var(--primary-color-light);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* 搜索框内的输入框样式 */
+li.search-box input {
+  height: 100%;
+  width: 100%;
+  outline: none;
+  border: none;
+  background-color: var(--primary-color-light);
+  color: var(--text-color);
+  border-radius: 6px;
+  font-size: 17px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+/* 侧边栏菜单项的链接样式 */
+.shell li a {
+  list-style: none;
+  height: 100%;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+/* 鼠标悬停在菜单项时的效果 */
+.shell li a:hover {
+  background-color: var(--primary-color);
+}
+
+.shell li a:hover .icon,
+.shell li a:hover .text {
+  color: var(--shell-color); /* 鼠标悬停时，图标和文字变为亮色 */
+}
+
+/* 侧边栏的滚动条设置，隐藏滚动条 */
+.menu-bar {
+  height: calc(100% - 55px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: scroll;
+}
+
+.menu-bar::-webkit-scrollbar {
+  display: none; /* 隐藏滚动条 */
+}
+
+/* 夜间模式开关区域 */
+.menu-bar .mode {
+  border-radius: 6px;
+  /* background-color: var(--primary-color-light); */
+  position: relative;
+  transition: all 0.3s ease;
+  padding-bottom : 70px;
+}
+
+.menu-bar .mode .sun-moon {
+  height: 50px;
+  width: 60px;
+}
+
+.mode .sun-moon i {
+  position: absolute;
+}
+
+.mode .sun-moon i.sun {
+  opacity: 0; /* 白天图标初始不可见 */
+}
+
+/* 夜间模式开关按钮 */
+.toggle-switch {
+  position: absolute;
+  right: 0;
+  height: 100%;
+  min-width: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* 开关的圆形滑块 */
+.switch {
+  position: relative;
+  height: 22px;
+  width: 40px;
+  border-radius: 25px;
+  background-color: var(--toggle-color);
+  transition: all 0.3s ease;
+}
+
+/* 滑块内部的圆点 */
+.switch::before {
+  content: '';
+  position: absolute;
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  top: 50%;
+  left: 5px;
+  transform: translateY(-50%);
+  background-color: var(--shell-color);
+  transition: all 0.3s ease;
+}
+
+/* 深色主题下的样式调整 */
+.dark .shell li a:hover .icon,
+.dark .shell li a:hover .text {
+  color: #ccc;
+}
+
+.dark .mode .sun-moon i.sun {
+  opacity: 1; /* 白天图标在深色主题下可见 */
+}
+
+.dark .mode .sun-moon i.moon {
+  opacity: 0;
+}
+
+.dark .switch::before {
+  left: 20px; /* 开关滑块位置调整 */
+}
+
+/* 设置按钮图标 */
+.icon-settings {
+  background-image: url('../icon/png/setting_button.png');
+  background-clip: content-box;
+  background-repeat: no-repeat;
+  background-size: 25px;
+  height:25px;
+  width:30px;
+}
+
+.icon-models {
+  background-image: url('../icon/button-model.svg');
+  background-clip: content-box;
+  background-repeat: no-repeat;
+  background-size: 25px;
+  height:25px;
+  width:30px;
+  color-scheme: dark;
+}
+
+.icon-tools {
+  background-image: url('../icon/png/box.png');
+  background-clip: content-box;
+  background-repeat: no-repeat;
+  background-size: 25px;
+  height:25px;
+  width:30px;
+}
+
+.icon-schedule {
+  background-image: url('../icon/png/schedule.png');
+  background-clip: content-box;
+  background-repeat: no-repeat;
+  background-size: 25px;
+  height:25px;
+  width:30px;
+}
+
+.history-icon {
+  background-image: url('../icon/png/history.png');
+  background-clip: content-box;
+  background-repeat: no-repeat;
+  background-size: 25px;
+  height:25px;
+  width:30px;
+}
+
+.favorite-icon {
+  background-image: url('../icon/png/favor.png');
+  background-clip: content-box;
+  background-repeat: no-repeat;
+  background-size: 25px;
+  height:25px;
+  width:30px;
+}
+
+.dialogue-icon {
+  background-image: url('../icon/png/dialogue.png');
+  background-clip: content-box;
+  background-repeat: no-repeat;
+  background-size: 25px;
+  height:25px;
+  width:30px;
+}
+
+.icon-console {
+  background-image: url('../icon/button-console.svg');
+  background-clip: content-box;
+  background-repeat: no-repeat;
+  background-size: 25px;
+  height:25px;
+  width:30px;
+}
+
+.icon-history {
+  background-image: url('../icon/button-history.svg');
+  background-clip: content-box;
+  background-repeat: no-repeat;
+  background-size: 25px;
+  height:25px;
+  width:30px;
+}
