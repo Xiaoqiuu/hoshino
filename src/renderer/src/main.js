@@ -9,6 +9,8 @@ import App from './App.vue';
 import router from './router';
 import './sidebar.js';
 
+// const { createDataTable } = require("./db/sqlite3db.js");
+// createDataTable();
 /*
 import './eventBus.js'
 
