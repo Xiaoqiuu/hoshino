@@ -38,3 +38,4 @@ function createDataTable() {
 exports.connectDatabase = connectDatabase;
 exports.createDataTable = createDataTable;
 exports.db = db;
+//db extends
