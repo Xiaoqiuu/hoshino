@@ -1,5 +1,5 @@
 <template>
-  <div id="app" :class="{ dark: isDarkMode }"> <!-- 通过动态类应用夜间模式 -->
+  <div id="app" :class="{ dark: isDarkMode }">
     <!-- 不可见的标题栏，用于窗口拖拽 -->
     <div class="title-bar"></div>
 
@@ -17,14 +17,13 @@
     </div>
 
     <!-- 导航栏 -->
-    <nav class="shell" :class="{ 'flowing-gradient': isDayMode, 'dark-mode': isDarkMode, 'collapsed': isSidebarCollapsed }"> <!-- 使用动态类切换模式 -->
+    <nav class="shell" :class="{ 'flowing-gradient': isDayMode, 'dark-mode': isDarkMode, 'collapsed': isSidebarCollapsed }">
       <header>
         <div class="image-text">
           <span class="image">
             <img src="../../../resources/icon.png" alt="">
           </span>
           <div class="text logo-text">
-          <!-- logo 文字 旧地方 为了简约暂时关闭了 -->
             <span class="name"></span>
             <span class="personal-signature"></span>
           </div>
@@ -65,13 +64,14 @@
               <span class="text nac-text">设置</span>
             </router-link>
           </li>
-          <li class="nav-link" id = "console-link">
+          <li class="nav-link" id="console-link">
             <router-link to="/console">
               <i class="icon icon-console"></i>
               <span class="text nac-text">命令行</span>
             </router-link>
           </li>
         </ul>
+
         <!-- 夜间模式切换 -->
         <li class="mode">
           <div class="sun-moon">
@@ -94,88 +94,102 @@
 </template>
 
 <script>
-import './assets/main.css';
-import './sidebar.js';
+import './assets/main.css'
+import './sidebar.js'
 
 export default {
   name: 'App',
   data() {
     return {
-      isDayMode: true, // 默认白天模式
-      isSidebarCollapsed: false, // 默认侧边栏展开
-    };
+      isDayMode: true,
+      isSidebarCollapsed: false
+    }
   },
   computed: {
     isDarkMode() {
-      return !this.isDayMode;
+      return !this.isDayMode
     }
   },
   methods: {
     minimizeWindow() {
-      window.electronAPI.minimizeWindow();
+      window.electronAPI.minimizeWindow()
     },
     toggleMaximizeWindow() {
-      window.electronAPI.toggleMaximizeWindow();
+      window.electronAPI.toggleMaximizeWindow()
     },
     closeWindow() {
-      window.electronAPI.closeWindow();
+      window.electronAPI.closeWindow()
     },
     toggleSidebar() {
-      this.isSidebarCollapsed = !this.isSidebarCollapsed;
+      this.isSidebarCollapsed = !this.isSidebarCollapsed
     },
     toggleDayNightMode(isDayMode) {
-      this.isDayMode = isDayMode;
-      document.body.classList.toggle('dark', !isDayMode); // 切换全局主题类
-    },
+      this.isDayMode = isDayMode
+      document.body.classList.toggle('dark', !isDayMode)
+    }
   }
-};
+}
 </script>
 
 <style scoped>
-/* 夜间模式样式 */
-.dark {
-  --body-color: #202224;
-  --shell-color: #171717;
-  --primary-color: #3a3b3c;
-  --primary-color-light: #3a3b3c;
-  --text-color: #ccc;
+/* 统一定义标题栏高度变量（放这里没问题，但我也会在全局 main.css 放一份，确保能被全局使用） */
+:root {
+  --titlebar-height: 32px;
 }
 
+/* 自定义标题栏 */
+.title-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--titlebar-height);
+  -webkit-app-region: drag;
+  background: transparent;
+  z-index: 1000;
+}
+.window-controls {
+  position: fixed;
+  top: 0; right: 0;
+  height: var(--titlebar-height);
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  z-index: 1001;
+}
+.window-control-button {
+  width: 36px; height: 28px;
+  display: grid; place-items: center;
+  border: none; background: transparent; cursor: pointer;
+}
+
+/* 侧边栏让出标题栏高度 */
 .shell {
-  background-color: var(--shell-color);
-  transition: all 0.3s ease;
+  margin-top: var(--titlebar-height);
 }
 
-.dark-mode {
-  background-color: var(--primary-color-dark); /* 在夜间模式下使用深色背景 */
-}
-
-.window-controls, .menu-bar, .window-content {
-  transition: all 0.3s ease; /* 添加平滑过渡效果 */
-}
-
-/*！ router-view CSS样式更改区域 ！*/
-
-/* 主要内容区域的样式 */
+/* ====== 高度链路补丁 ①：window-content 吃满剩余视口高度，不滚动，把滚动交给子页面 ====== */
 .window-content {
   position: relative;
-  margin-left: 250px; /* 初始左边距 */
-  
-
-/**
- * padding-top 将router-view的高度设置为0顶到虚空标题栏 让功能界面的css样式自己设定顶部的距离
- **/
-  padding-top: 0px; 
-
-  flex-grow: 1; /* 允许内容区域扩展填充剩余空间 */
-  width: calc(100% - (20% + 00px)); /* 自适应宽度 */
-  transition: margin-left 0.3s ease, width 0.3s ease; /* 平滑过渡 */
+  margin-left: 250px; /* 你的侧栏宽 */
+  height: calc(100vh - var(--titlebar-height));   /* 关键：扣掉自定义标题栏 */
+  overflow: hidden;                                 /* 由子路由决定是否滚动 */
+  display: flex; flex-direction: column;
   box-sizing: border-box;
+  transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
-/* 当侧边栏处于收起状态时 */
+/* 侧栏收起时 */
 .shell.close + .window-content {
-  width: calc(100% - 87px ); /* 自适应宽度 */
-  margin-left: 88px/* 初始左边距 */
+  width: calc(100% - 87px);
+  margin-left: 88px;
+  height: calc(100vh - var(--titlebar-height));
+}
+
+/* ====== 高度链路补丁 ②：让 router-view 承载的路由根组件占满 & 允许内部滚动 ======
+   这条只作用于 window-content 的“直接孩子”（router-view 渲染出的根 DOM） */
+.window-content > * {
+  flex: 1 1 auto;
+  min-height: 0;             /* 没这句，内部绝对定位/flex 子项经常不滚 */
+  display: flex;
+  flex-direction: column;
 }
 </style>

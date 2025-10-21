@@ -15,17 +15,22 @@
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "npm run build && electron-builder --mac",
-    "build:linux": "npm run build && electron-builder --linux"
+    "build:linux": "npm run build && electron-builder --linux",
+    "dedupe": "npm dedupe"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
+    "@submitty/pdf-annotate.js": "https://codeload.github.com/Submitty/pdf-annotate.js/tar.gz/refs/tags/24.6.6",
     "axios": "^1.7.7",
     "date-fns": "^4.1.0",
     "electron-updater": "^6.1.7",
     "element-plus": "^2.8.1",
-    "pnpm": "^9.9.0",
+    "openai": "^5.20.0",
+    "pdfjs-dist": "4.3.136",
+    "rebuild": "^0.1.2",
     "replicate": "^0.32.0",
+    "sqlite3": "^5.1.7",
     "vue-router": "^4.4.3"
   },
   "devDependencies": {
@@ -43,5 +48,11 @@
     "unplugin-vue-components": "^0.27.4",
     "vite": "^5.3.1",
     "vue": "^3.4.30"
+  },
+  "overrides": {
+    "pdfjs-dist": "4.3.136",
+    "@submitty/pdf-annotate.js": {
+      "pdfjs-dist": "4.3.136"
+    }
   }
 }
